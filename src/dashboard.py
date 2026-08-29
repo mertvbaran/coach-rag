@@ -78,17 +78,21 @@ TEXT = {
         # Matched to data/sample/, not to any particular vault, so a repo clone
         # with no notes of its own still gets three questions the sample data
         # answers. Each wording was also checked directly against the gate
-        # (see reranker.is_in_scope): a coverage question's cross-encoder
-        # score varies with phrasing (threshold_robustness.md), so a wording
-        # that happens to sit close to the cutoff would make the very first
-        # thing a new user tries look broken. "Why does gradient descent
-        # sometimes fail to converge?" scored -4.70 in Turkish translation --
-        # below the -3.94 cutoff -- while "How does gradient descent work?"
-        # scores +1.49/+1.47 in both languages, comfortably clear of it.
+        # (see reranker.is_in_scope) in BOTH languages, because a coverage
+        # question's cross-encoder score varies with phrasing
+        # (threshold_robustness.md) and a wording sitting close to the cutoff
+        # would make the very first thing a new user tries look broken. The
+        # margin is not symmetric between languages -- "How does logistic
+        # regression work?" scores +5.02 in English but -0.14 in Turkish -- so
+        # these three were picked for clearing -3.68 comfortably in both:
+        # +8.28/+7.87, +2.69/+2.03, +1.88/+0.62 (TR/EN). Adding a clause to an
+        # otherwise safe question can also sink it: "What is overfitting?"
+        # scores -1.94, but "What is overfitting and how do you detect it?"
+        # drops to -3.73, below the cutoff.
         "examples": [
-            "How does gradient descent work?",
-            "What is overfitting and how do you detect it?",
-            "Why use cross validation instead of a single train/test split?",
+            "What is cross validation?",
+            "What is feature engineering?",
+            "What is the difference between precision and recall?",
         ],
         "wrong_refuse": "This should have been answered",
         "wrong_accept": "This should have been refused",
@@ -139,9 +143,9 @@ TEXT = {
         "stale": "Aramak için Enter'a basın. Aşağıdaki sonuçlar hâlâ <em>{question}</em> sorusuna ait",
         "try": "Şunlardan birini deneyin",
         "examples": [
-            "Gradient descent nasıl çalışır?",
-            "Overfitting nedir, nasıl fark edilir?",
-            "Tek bir train/test bölmesi yerine neden cross validation kullanılır?",
+            "Cross validation nedir?",
+            "Feature engineering nedir?",
+            "Precision ve recall arasındaki fark nedir?",
         ],
         "wrong_refuse": "Bu soruya cevap verilmeliydi",
         "wrong_accept": "Bu soru reddedilmeliydi",

@@ -15,6 +15,13 @@ retrieval mechanics, not a production tool. [Results](#results) covers what
 was measured and learned, which is the point of the project as much as the
 code is.
 
+[![Walkthrough and live demo](https://img.youtube.com/vi/EcNWpuXGeC4/maxresdefault.jpg)](https://youtu.be/EcNWpuXGeC4)
+
+**[Walkthrough and live demo](https://youtu.be/EcNWpuXGeC4)** (5 min, spoken in
+Turkish) — the design decisions and measured results below, followed by the
+dashboard answering two questions and refusing a third one that falls outside
+the knowledge base.
+
 | | |
 |---|---|
 | **Corpus** | 91 markdown files, ~55,000 words, Turkish prose with English technical terms |
