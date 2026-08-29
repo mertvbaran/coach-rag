@@ -1,0 +1,9 @@
+data/*
+!data/sample/
+!data/sample/**
+*.npy
+*.jsonl
+__pycache__/
+.venv/
+.env
+results/abstention_scores.json

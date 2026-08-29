@@ -1,0 +1,540 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* Recall — a search surface for a personal knowledge base.
+ *
+ * The visual idea is retrieval as illumination: a dark field with one bright
+ * beam. The search box is the light source -- it carries a live aura and is
+ * the only element allowed to glow -- and results emerge out of the dark in
+ * rank order, each one a pane of glass lit from behind by how well it matched.
+ *
+ * Two colours do the semantic work and nothing else does: violet-to-cyan means
+ * "found, and this is how strongly", coral means "this question is outside the
+ * knowledge base". Nothing decorative is allowed either colour.
+ *
+ * Only own class names are styled. Streamlit's generated class names change
+ * per release; its data-testid hooks are used sparingly and each one is
+ * marked below with why there was no alternative.
+ */
+
+/* ---- tokens ---- */
+
+:root {
+  --bg: #0b0a16;
+  --bg-2: #12102170;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-lit: rgba(255, 255, 255, 0.06);
+  --edge: rgba(255, 255, 255, 0.09);
+  --edge-lit: rgba(255, 255, 255, 0.16);
+
+  --text: #ece9f5;
+  --text-dim: #9b96b4;
+  --text-faint: #6f6a86;
+
+  --beam-a: #7c5cff;   /* retrieval, strong */
+  --beam-b: #22d3ee;   /* retrieval, weak end of the same scale */
+  --coral: #ff5d73;    /* out of scope, and nothing else */
+
+  --r: 14px;
+  --margin-w: 3.5rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* This is a single-theme design, and deliberately so. The whole surface is
+   built on light against dark -- a glowing search field, glass panes, a
+   gradient that reads as a beam -- and none of it survives being inverted.
+   Streamlit's own controls follow base="dark" in .streamlit/config.toml, so
+   fixing the theme here keeps them and these rules from disagreeing. */
+
+/* ---- ground ---- */
+
+/* Two large, very soft radial washes fixed behind the page. They are the only
+   thing that makes the background feel lit rather than flat, and they sit
+   behind everything so no text ever loses contrast against them. */
+.stApp {
+  background:
+    radial-gradient(120vw 80vh at 12% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
+    radial-gradient(90vw 70vh at 92% 8%, rgba(34, 211, 238, 0.12), transparent 55%),
+    var(--bg) !important;
+  background-attachment: fixed !important;
+  color: var(--text);
+}
+
+/* [data-testid="stIconMaterial"] is excluded: Streamlit's expander arrows and
+   checkmarks are ligatures in the Material Symbols font (the element's text
+   content is literally "keyboard_arrow_right"), so overriding font-family
+   there turns every icon into that raw word. */
+html, body, [class*="st-"]:not([data-testid="stIconMaterial"]), button, input, textarea, select {
+  font-family: "Public Sans", -apple-system, "Segoe UI", sans-serif;
+  color: var(--text);
+}
+
+/* Streamlit's toolbar is fixed over the top of the page, so the content needs
+   to clear its height; the strip itself is made transparent because a solid
+   bar reads as a seam across the gradient. */
+.block-container {
+  padding-top: 3.5rem !important;
+  padding-bottom: 5rem !important;
+  max-width: 62rem;
+}
+
+div[data-testid="stHeader"] {
+  background: transparent !important;
+}
+
+/* ---- entrance ---- */
+
+/* One orchestrated page-load sequence rather than scattered effects: the
+   masthead, then the search box, then whatever is below it. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.masthead { animation: rise 0.5s var(--ease) both; }
+div[data-testid="stForm"] { animation: rise 0.55s var(--ease) 0.06s both; }
+
+/* ---- masthead ---- */
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  padding-bottom: 0.1rem;
+}
+
+.masthead .name {
+  display: inline-block;
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  /* Generous leading and a little padding: a gradient fill is painted against
+     the element's own box, so a tight line-height clips the letterforms. */
+  line-height: 1.35;
+  padding: 0.1em 0.06em 0.14em;
+  letter-spacing: -0.035em;
+  /* The wordmark carries the same violet-to-cyan the scores do: the product's
+     name and its measure of a good match are the same gradient. */
+  background: linear-gradient(100deg, var(--text) 12%, var(--beam-a) 58%, var(--beam-b) 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---- the search box: the one thing allowed to glow ---- */
+
+div[data-testid="stForm"] {
+  position: relative;
+  border: 1px solid var(--edge) !important;
+  border-radius: calc(var(--r) + 4px) !important;
+  background: var(--bg-2) !important;
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  padding: 1.15rem 1.15rem 0.85rem !important;
+  box-shadow: 0 18px 50px -22px rgba(0, 0, 0, 0.65);
+  overflow: visible;
+}
+
+/* The aura. It drifts slowly so the surface reads as live rather than
+   printed, and it sits behind the form with a blur wide enough that no edge
+   of it is ever legible as a shape. */
+div[data-testid="stForm"]::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(115deg, var(--beam-a), var(--beam-b), var(--beam-a));
+  background-size: 220% 220%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  animation: drift 9s ease-in-out infinite;
+  pointer-events: none;
+}
+
+div[data-testid="stForm"]::after {
+  content: "";
+  position: absolute;
+  inset: -28px -18px;
+  border-radius: 40px;
+  background: radial-gradient(60% 120% at 30% 0%, rgba(124, 92, 255, 0.28), transparent 70%),
+              radial-gradient(50% 120% at 85% 20%, rgba(34, 211, 238, 0.2), transparent 70%);
+  filter: blur(26px);
+  z-index: -1;
+  animation: drift 9s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes drift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+/* Streamlit wraps the input in a div that carries the field's background and
+   border; both have to be cleared for the box to sit on the glass rather than
+   float as a second panel inside it. */
+.stTextInput > div,
+.stTextInput [data-baseweb="input"],
+.stTextInput [data-baseweb="base-input"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.stTextInput input {
+  font-family: "Sora", system-ui, sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 400 !important;
+  padding: 0.75rem 0.15rem !important;
+  border: none !important;
+  border-bottom: 1px solid var(--edge) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--text) !important;
+  transition: border-color 0.3s var(--ease);
+}
+.stTextInput input::placeholder { color: var(--text-faint) !important; }
+.stTextInput input:focus {
+  border-bottom-color: var(--beam-a) !important;
+  box-shadow: 0 1px 0 0 var(--beam-a) !important;
+}
+
+/* ---- buttons ---- */
+
+.stFormSubmitButton button {
+  font-family: "Sora", system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.005em;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 0.5rem 1.5rem !important;
+  color: #0b0a16 !important;
+  background: linear-gradient(100deg, var(--beam-a), var(--beam-b)) !important;
+  box-shadow: 0 8px 22px -10px var(--beam-a);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), filter 0.25s var(--ease);
+}
+.stFormSubmitButton button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 14px 30px -12px var(--beam-a);
+}
+.stFormSubmitButton button:active { transform: translateY(0); }
+
+/* The feedback control is a quiet, secondary action -- it reports a mistake,
+   it does not run the product -- so it gets an outline, never the gradient. */
+.stButton button {
+  border: 1px solid var(--edge-lit) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--text-dim) !important;
+  font-size: 0.82rem !important;
+  padding: 0.34rem 1rem !important;
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease), background 0.25s var(--ease);
+}
+.stButton button:hover {
+  color: var(--text) !important;
+  border-color: var(--coral) !important;
+  background: rgba(255, 93, 115, 0.08) !important;
+}
+
+/* The measurements door: a quiet text link beside the wordmark, not a form
+   control -- it does not report anything, so it gets none of the outline or
+   the coral the feedback button carries. Right-aligned in its column so it
+   sits close to the language selector rather than floating mid-header. */
+.st-key-stats_link { display: flex; justify-content: flex-end; }
+.st-key-stats_link button {
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-faint) !important;
+  font-size: 0.85rem !important;
+  padding: 0.3rem 0 !important;
+  box-shadow: none !important;
+}
+.st-key-stats_link button:hover {
+  color: var(--beam-b) !important;
+  background: transparent !important;
+}
+
+/* ---- results ---- */
+
+/* Panes of glass emerging out of the dark, in rank order. The stagger is
+   capped at eight so a long list never crawls in. */
+@keyframes emerge {
+  from { opacity: 0; transform: translateY(10px) scale(0.995); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hit {
+  position: relative;
+  margin: 0.55rem 0;
+  padding: 0.9rem 1.1rem 1rem calc(var(--margin-w) + 0.2rem);
+  border: 1px solid var(--edge);
+  border-radius: var(--r);
+  background: var(--surface);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: emerge 0.5s var(--ease) both;
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.hit:hover {
+  border-color: var(--edge-lit);
+  background: var(--surface-lit);
+  transform: translateY(-2px);
+}
+.hit:nth-child(1) { animation-delay: 0.02s; }
+.hit:nth-child(2) { animation-delay: 0.07s; }
+.hit:nth-child(3) { animation-delay: 0.12s; }
+.hit:nth-child(4) { animation-delay: 0.17s; }
+.hit:nth-child(5) { animation-delay: 0.22s; }
+.hit:nth-child(6) { animation-delay: 0.27s; }
+.hit:nth-child(7) { animation-delay: 0.32s; }
+.hit:nth-child(n+8) { animation-delay: 0.36s; }
+
+/* The rank is set in the margin beside its result, not in a badge on it:
+   retrieval order is real information, so it reads like a line number. */
+.hit .rank {
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  width: var(--margin-w);
+  text-align: center;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A bar, not a bare number: how strongly a passage matched is a quantity, and
+   a length is read faster than four decimal places. The figure stays beside
+   it for anyone who wants the exact value. */
+.hit .score {
+  float: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  margin-left: 0.9rem;
+}
+.hit .bar {
+  display: block;
+  width: 46px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.hit .bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--beam-b), var(--beam-a));
+}
+
+.hit .path {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: var(--text);
+  word-break: break-word;
+}
+.hit .text {
+  margin-top: 0.45rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+
+/* Results that belong to a question other than the one now in the box. */
+.hit.stale { opacity: 0.3; }
+
+/* ---- the refusal notice ---- */
+
+/* The one place coral appears. A lit panel rather than an alert box: it is an
+   answer -- "there is nothing here" -- not an error in the application. */
+.refusal {
+  display: flex;
+  gap: 0.7rem;
+  align-items: baseline;
+  margin: 0.9rem 0 0.2rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid rgba(255, 93, 115, 0.3);
+  border-radius: var(--r);
+  background: linear-gradient(100deg, rgba(255, 93, 115, 0.13), rgba(255, 93, 115, 0.04));
+  font-size: 0.9rem;
+  color: var(--text);
+  animation: rise 0.45s var(--ease) both;
+}
+.refusal .lede {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--coral);
+  white-space: nowrap;
+}
+
+/* ---- the question being answered ---- */
+
+.asked {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  margin: 1rem 0 0.2rem;
+  padding-left: 0.1rem;
+}
+.asked em { color: var(--text-dim); font-style: normal; }
+
+/* ---- empty state ---- */
+
+/* An empty screen is an invitation to act, so the examples are the invitation:
+   set as real questions, lit on hover the way the results are. */
+.tryline {
+  margin-top: 1.4rem;
+  animation: rise 0.55s var(--ease) 0.12s both;
+}
+.tryline .lbl {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.6rem;
+}
+.tryline em {
+  display: block;
+  font-style: normal;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 0.4rem;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  width: fit-content;
+  max-width: 100%;
+  background: var(--surface);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.tryline em:hover {
+  color: var(--text);
+  border-color: var(--edge-lit);
+  transform: translateX(3px);
+}
+
+/* ---- reports ---- */
+
+/* st-key-report is Streamlit's documented hook for st.container(key=...),
+   part of the public API rather than a generated class. */
+.st-key-report {
+  animation: rise 0.5s var(--ease) both;
+}
+/* The gradient runs the full title rather than stopping partway: a fixed
+   percentage (e.g. "solid for the first 30%, then colour") looks utterly
+   different on a four-word title than a nine-word one, because that
+   percentage lands on a different letter each time. Spanning the whole line
+   is the only version that reads the same regardless of title length. */
+.st-key-report h1 {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.85rem;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.7rem;
+  background: linear-gradient(100deg, var(--text) 8%, var(--beam-a) 60%, var(--beam-b) 105%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.st-key-report h2 {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  margin-top: 2.2rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--edge);
+}
+.st-key-report p, .st-key-report li { color: var(--text-dim); }
+.st-key-report strong { color: var(--text); }
+.st-key-report table {
+  font-size: 0.84rem;
+  border: 1px solid var(--edge);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.st-key-report th {
+  background: var(--surface-lit) !important;
+  color: var(--text) !important;
+  font-weight: 600;
+}
+.st-key-report td { color: var(--text-dim); }
+.st-key-report code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.85em;
+  color: var(--beam-b);
+  background: var(--surface-lit);
+  padding: 0.1em 0.35em;
+  border-radius: 5px;
+}
+/* Wide tables scroll inside their own container; the page body never does. */
+.st-key-report [data-testid="stMarkdownContainer"] { overflow-x: auto; }
+
+/* ---- report picker ---- */
+
+div[data-testid="stSelectbox"] > div > div {
+  background: var(--surface) !important;
+  border: 1px solid var(--edge) !important;
+  border-radius: 999px !important;
+}
+
+/* ---- expander ---- */
+
+div[data-testid="stExpander"] details {
+  border: 1px solid var(--edge) !important;
+  border-radius: var(--r) !important;
+  background: transparent !important;
+}
+div[data-testid="stExpander"] summary p {
+  font-size: 0.82rem !important;
+  color: var(--text-faint) !important;
+}
+
+/* ---- footer ---- */
+
+.colophon {
+  border-top: 1px solid var(--edge);
+  margin-top: 3.5rem;
+  padding-top: 1rem;
+  font-size: 0.74rem;
+  color: var(--text-faint);
+}
+
+/* ---- narrow screens ---- */
+
+@media (max-width: 640px) {
+  .masthead { flex-wrap: wrap; gap: 0.4rem; }
+  .masthead .name { font-size: 2rem; }
+  /* The submit hint is absolutely positioned inside the field, which overlaps
+     the question once the field is narrow. It is a hint, not information the
+     reader needs at this width. */
+  div[data-testid="stForm"] [data-testid="InputInstructions"] { display: none; }
+  /* A native placeholder can't take an ellipsis or wrap -- the browser just
+     hard-clips it -- so the only lever here is making more of it fit. */
+  .stTextInput input { font-size: 1rem !important; }
+  /* Below 640px there is no room for a margin, so the rank moves onto its own
+     line above the result rather than into a margin that no longer exists. */
+  :root { --margin-w: 0rem; }
+  .hit { padding-left: 1rem; }
+  .hit .rank { position: static; text-align: left; width: auto; display: block; margin-bottom: 0.3rem; }
+  .hit .score { float: none; display: flex; margin: 0 0 0.5rem; }
+  .refusal { flex-direction: column; gap: 0.25rem; }
+  .tryline em { width: auto; }
+}
+
+/* ---- motion preference ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

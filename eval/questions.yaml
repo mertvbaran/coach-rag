@@ -1,0 +1,337 @@
+# Gold-standard evaluation set, built from the personal knowledge base's
+# top-level index page.
+# `expected` lists document slugs (order-insensitive), matching the `doc_slug`
+# field produced by src/loader.py. Contains no vault content — safe to publish.
+
+questions:
+  # --- direct factual (10) ---
+  - id: q01
+    question: "ROC eğrisi neden eşikten bağımsız bir metrik?"
+    expected: [roc-auc]
+    type: direct
+
+  - id: q02
+    question: "Wilson Lower Bound ne işe yarar?"
+    expected: [wilson-lower-bound]
+    type: direct
+
+  - id: q03
+    question: "RFM analizinde Recency, Frequency, Monetary neyi ölçer?"
+    expected: [rfm-analizi]
+    type: direct
+
+  - id: q04
+    question: "CART algoritması nasıl if/else kural zincirine dönüşür?"
+    expected: [cart-algoritmasi]
+    type: direct
+
+  - id: q05
+    question: "K-fold cross validation nedir ve neden holdout'tan daha güvenilir?"
+    expected: [cross-validation]
+    type: direct
+
+  - id: q06
+    question: "PCA boyut indirgemeyi nasıl yapar?"
+    expected: [pca]
+    type: direct
+
+  - id: q07
+    question: "IQR yöntemiyle aykırı değerler nasıl tespit edilir?"
+    expected: [aykiri-degerler-iqr]
+    type: direct
+
+  - id: q08
+    question: "Association Rule Learning'de support, confidence ve lift ne anlama gelir?"
+    expected: [association-rule-learning]
+    type: direct
+
+  - id: q09
+    question: "Gradient descent'te learning rate neyi kontrol eder?"
+    expected: [gradient-descent]
+    type: direct
+
+  - id: q10
+    question: "KNN neden 'lazy learner' olarak adlandırılır?"
+    expected: [knn-algoritmasi]
+    type: direct
+
+  # --- paraphrase, no keyword overlap (6) ---
+  - id: q11
+    question: "Modelim %95 doğruluk veriyor ama işe yaramıyor, neden olabilir?"
+    expected: [dengesiz-veri-setleri, imbalanced-datasets, siniflandirma-metrikleri]
+    type: paraphrase
+    note: "'imbalanced' veya 'accuracy' kelimesi geçmiyor — semantic match testi. 'imbalanced-datasets' vault'ta aynı konunun source-sayfası (concept sayfası 'dengesiz-veri-setleri' farklı slug taşıyor) -- ikisi de doğru kabul edilir, bkz. results/disagreement_analysis.md"
+
+  - id: q12
+    question: "Elimde etiket yok, müşterileri gruplara nasıl ayırabilirim?"
+    expected: [k-means, unsupervised-learning]
+    type: paraphrase
+    note: "'clustering' veya 'kümeleme' kelimesi kullanılmadı"
+
+  - id: q13
+    question: "Kategorik bir sütunu modele sayısal olarak nasıl veririm?"
+    expected: [encoding-yontemleri]
+    type: paraphrase
+    note: "'encoding' kelimesi geçmiyor"
+
+  - id: q14
+    question: "Bir kullanıcının geçmiş alışverişine bakıp gelecekte ne kadar harcayacağını nasıl tahmin ederim?"
+    expected: [bg-nbd-gamma-gamma, cltv-formul]
+    type: paraphrase
+    note: "'CLTV' terimi kullanılmadı"
+
+  - id: q15
+    question: "Farklı büyüklükteki sayısal sütunları model için nasıl aynı ölçeğe getiririm?"
+    expected: [feature-scaling]
+    type: paraphrase
+    note: "'scaling' kelimesi geçmiyor"
+
+  - id: q16
+    question: "Eğitim setinde çok iyi ama gerçek veride kötü sonuç veren bir model neyle açıklanır?"
+    expected: [cross-validation, cart-algoritmasi]
+    type: paraphrase
+    note: "'overfitting' kelimesi kullanılmadı"
+
+  # --- multi-document (5) ---
+  - id: q17
+    question: "Ağaçları paralel kurmakla sırayla kurmak arasındaki fark nedir?"
+    expected: [random-forest-algoritmasi, gbm-boosting-algoritmasi, advanced-trees]
+    primary: random-forest-algoritmasi
+    type: multi_doc
+    note: "bagging vs boosting karşılaştırması"
+
+  - id: q18
+    question: "Precision, Recall ve F1 skoru arasındaki ilişki nedir, ROC-AUC ile nasıl farklılaşır?"
+    expected: [siniflandirma-metrikleri, roc-auc]
+    primary: siniflandirma-metrikleri
+    type: multi_doc
+
+  - id: q19
+    question: "Denetimsiz öğrenmede kümeleme sonrası boyut indirgeme neden birlikte kullanılır?"
+    expected: [k-means, pca, unsupervised-learning]
+    primary: unsupervised-learning
+    type: multi_doc
+
+  - id: q20
+    question: "İçerik tabanlı ve işbirlikçi filtreleme öneri sistemleri nasıl farklılaşır?"
+    expected: [icerik-tabanli-tavsiye, isbirligi-filtreleme]
+    primary: icerik-tabanli-tavsiye
+    type: multi_doc
+
+  - id: q21
+    question: "Eksik değerleri doldurmanın farklı yöntemleri nelerdir ve outlier tespitiyle nasıl ilişkilidir?"
+    expected: [eksik-deger-yontemleri, aykiri-degerler-iqr, lof-local-outlier-factor]
+    primary: eksik-deger-yontemleri
+    type: multi_doc
+
+  # --- Turkish/English code-switch (3) ---
+  - id: q22
+    question: "Feature scaling yapmadan KNN çalıştırırsam ne olur?"
+    expected: [knn-algoritmasi, feature-scaling]
+    type: code_switch
+
+  - id: q23
+    question: "Voting classifier'da hard voting ile soft voting arasındaki fark nedir?"
+    expected: [voting-classifier]
+    type: code_switch
+
+  - id: q24
+    question: "Model persistence için joblib kullanırken training-serving skew nasıl önlenir?"
+    expected: [model-persistence-joblib]
+    type: code_switch
+
+  # --- direct factual, second batch (q27-q38) ---
+  # Added to widen vault coverage: the first 26 questions touched 28 of the
+  # vault's 91 documents, leaving most of it untested.
+  - id: q27
+    question: "Doğrusal regresyonda intercept (b) terimi neyi ifade eder?"
+    expected: [dogrusal-regresyon]
+    type: direct
+
+  - id: q28
+    question: "Lojistik regresyon neden sigmoid fonksiyonu kullanır?"
+    expected: [lojistik-regresyon]
+    type: direct
+
+  - id: q29
+    question: "MSE, RMSE ve MAE arasındaki fark nedir?"
+    expected: [regresyon-performans-metrikleri]
+    type: direct
+
+  - id: q30
+    question: "Parametre ile hiperparametre arasındaki fark nedir?"
+    expected: [parametre-vs-hiperparametre]
+    type: direct
+
+  - id: q31
+    question: "Feature extraction'da binary/flag değişken nasıl türetilir?"
+    expected: [feature-extraction]
+    type: direct
+
+  - id: q32
+    question: "A/B testinde hipotez testi adımları nelerdir?"
+    expected: [istatistik-ab-testi]
+    type: direct
+
+  - id: q33
+    question: "Python'da list ve dict comprehension nasıl yazılır?"
+    expected: [list-comprehension]
+    type: direct
+
+  - id: q34
+    question: "Python'da list, tuple, set ve dictionary arasındaki farklar nelerdir?"
+    expected: [python-veri-yapilari]
+    type: direct
+
+  - id: q35
+    question: "SQL'de char ile varchar arasında nasıl seçim yapılır?"
+    expected: [sql-veri-tipi-secimi]
+    type: direct
+
+  - id: q36
+    question: "Pandas'ta groupby ile veri nasıl gruplanır?"
+    expected: [pandas-temel-operasyonlar]
+    type: direct
+
+  - id: q37
+    question: "Fonksiyonel EDA yaklaşımı nedir?"
+    expected: [fonksiyonel-eda]
+    type: direct
+
+  - id: q38
+    question: "Ağırlıklı puanlamada zaman faktörü neden hesaba katılır?"
+    expected: [agirlikli-puanlama-ve-siralama]
+    type: direct
+
+  # --- paraphrase, second batch (q39-q44) ---
+  - id: q39
+    question: "Sürekli bir sayı tahmin eden modelin hatasını nasıl ölçerim?"
+    expected: [regresyon-performans-metrikleri]
+    type: paraphrase
+    note: "'MSE'/'RMSE'/'metrik' kelimeleri geçmiyor"
+
+  - id: q40
+    question: "Modelin kendi öğrendiği değerler ile benim baştan ayarladıklarım nasıl ayrılır?"
+    expected: [parametre-vs-hiperparametre]
+    type: paraphrase
+    note: "'parametre'/'hiperparametre' terimleri kullanılmadı"
+
+  - id: q41
+    question: "İki tasarım varyantından hangisinin gerçekten daha iyi olduğuna nasıl karar veririm?"
+    expected: [istatistik-ab-testi]
+    type: paraphrase
+    note: "'A/B testi' terimi geçmiyor"
+
+  - id: q42
+    question: "Çıktıyı 0 ile 1 arasına sıkıştırıp olasılık gibi yorumlayan yöntem hangisi?"
+    expected: [lojistik-regresyon]
+    type: paraphrase
+    note: "'lojistik'/'sigmoid' kelimeleri geçmiyor"
+
+  - id: q43
+    question: "Az oy almış ama yüksek puanlı bir ürünü listede nereye koymalıyım?"
+    expected: [wilson-lower-bound, agirlikli-puanlama-ve-siralama]
+    type: paraphrase
+    note: "istatistiksel güven/sıralama problemi, terim kullanılmadan"
+
+  - id: q44
+    question: "Aynı EDA adımlarını her projede tekrar yazmaktan nasıl kurtulurum?"
+    expected: [fonksiyonel-eda]
+    type: paraphrase
+    note: "'fonksiyonel'/'refactor' terimleri geçmiyor"
+
+  # --- multi-document, second batch (q45-q47) ---
+  - id: q45
+    question: "Doğrusal regresyon ile lojistik regresyon ne zaman birbirinin yerine kullanılır?"
+    expected: [dogrusal-regresyon, lojistik-regresyon]
+    primary: lojistik-regresyon
+    type: multi_doc
+
+  - id: q46
+    question: "Yeni değişken türetmek ile mevcut değişkenleri ölçeklemek arasındaki fark nedir?"
+    expected: [feature-extraction, feature-scaling]
+    primary: feature-extraction
+    type: multi_doc
+
+  - id: q47
+    question: "Etiketsiz veriden sınıflandırma modeli kurmanın yolu nedir?"
+    expected: [cluster-then-label, k-means]
+    primary: cluster-then-label
+    type: multi_doc
+
+  # --- Turkish/English code-switch, second batch (q48-q49) ---
+  - id: q48
+    question: "Pandas'ta missing value'ları fillna ile nasıl doldururum?"
+    expected: [pandas-temel-operasyonlar, eksik-deger-yontemleri]
+    type: code_switch
+
+  - id: q49
+    question: "Overfitting'i engellemek için hangi regularization yöntemleri var?"
+    expected: [dogrusal-regresyon, cart-algoritmasi]
+    type: code_switch
+    note: "regularization birden fazla sayfada geçiyor"
+
+  # --- out of scope (q25-q26 original, q50-q57 added) ---
+  # Expanded from 2 to 10: every abstention metric depends on this group, and
+  # 2 questions cannot support a threshold decision. Split deliberately between
+  # "technical but different domain" (the hard case -- shares vocabulary
+  # register with the vault) and "everyday" (no overlap at all).
+  - id: q25
+    question: "Transformer mimarisinde self-attention mekanizması nasıl çalışır?"
+    expected: []
+    type: out_of_scope
+    note: "Deep Learning modülü ertelendi, vault'ta bu konu işlenmedi"
+
+  - id: q26
+    question: "Kubernetes'te pod'lar arası network policy nasıl tanımlanır?"
+    expected: []
+    type: out_of_scope
+    note: "Vault kapsamına hiç girmemiş bir konu"
+
+  - id: q50
+    question: "Docker container ile virtual machine arasındaki fark nedir?"
+    expected: []
+    type: out_of_scope
+    note: "technical-other-domain"
+
+  - id: q51
+    question: "React useEffect hook ne zaman tetiklenir?"
+    expected: []
+    type: out_of_scope
+    note: "technical-other-domain"
+
+  - id: q52
+    question: "Git rebase ile merge arasındaki fark nedir?"
+    expected: []
+    type: out_of_scope
+    note: "technical-other-domain"
+
+  - id: q53
+    question: "Bayesian hierarchical modelleme nedir?"
+    expected: []
+    type: out_of_scope
+    note: "adjacent domain — istatistik ama vault'ta işlenmemiş, en zor vaka"
+
+  - id: q54
+    question: "Kalman filtresi nasıl çalışır?"
+    expected: []
+    type: out_of_scope
+    note: "adjacent domain — vault'ta yok"
+
+  - id: q55
+    question: "İstanbulda hava durumu nasıl?"
+    expected: []
+    type: out_of_scope
+    note: "everyday — corpus ile hiç örtüşme yok"
+
+  - id: q56
+    question: "Evde ekmek nasıl yapılır?"
+    expected: []
+    type: out_of_scope
+    note: "everyday"
+
+  - id: q57
+    question: "Bir bitkiyi nasıl çoğaltırım?"
+    expected: []
+    type: out_of_scope
+    note: "everyday — 'çoğaltma' kelimesi resampling ile karışabiliyor, bilinen zor vaka"

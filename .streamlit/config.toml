@@ -1,0 +1,21 @@
+[server]
+address = "localhost"
+
+[client]
+# Streamlit's default toolbar (Deploy button, the "rerun on file change"
+# banner, the settings menu) is aimed at development, not at someone using
+# the finished page -- showing it is the one place the illusion of a
+# purpose-built product breaks.
+toolbarMode = "minimal"
+
+# The interface reads as retrieval-as-illumination: a dark field with one
+# bright beam, where violet-to-cyan means "found, and this strongly" and coral
+# means "outside the knowledge base". These values only set Streamlit's own
+# chrome; the surfaces themselves are styled in src/style.css, which also
+# carries a light-mode palette under prefers-color-scheme.
+[theme]
+base = "dark"
+primaryColor = "#7C5CFF"
+backgroundColor = "#0B0A16"
+secondaryBackgroundColor = "#16142A"
+textColor = "#ECE9F5"
